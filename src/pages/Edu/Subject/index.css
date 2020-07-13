@@ -5,3 +5,6 @@
 .subject .subjectTable {
   margin-top: 20px;
 }
+.subject .titleInput {
+  width: 300px;
+}
