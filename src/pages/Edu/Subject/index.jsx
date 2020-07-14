@@ -45,6 +45,8 @@ class Subject extends Component {
   //点击修改按钮 显示修改的input框
   handleupdate = (value) => {
     return () => {
+      // 保存原来的title
+      this.oldSubjectTitle = value.title
       // 调用这个可以重新渲染页面
       this.setState({
         title: value.title,
@@ -60,17 +62,34 @@ class Subject extends Component {
     })
   }
   // 发送更新请求更新修改数据
-  handleUpdate = async () => {
-    try {
-      // 调用api 更新
-      const { title, _id } = this.state
-      await reqUpdateSubject(title, _id)
-      // 修改成功重新渲染本页面
-      this.setState({
-        title: "",
-        _id: "",
-      })
-    } catch (error) {}
+  handleUpdate = (value) => {
+    return async () => {
+      try {
+        // 调用api 更新
+        const { title, _id } = this.state
+        if (title.trim() === "") {
+          message.error("title不能为空")
+          return
+        }
+        if (title.trim() === this.oldSubjectTitle) {
+          // 关闭input框
+          this.handleCancel()
+          return
+        }
+        await reqUpdateSubject(title, _id)
+        // 修改成功重新渲染本页面初始化数据
+        this.handleCancel()
+        // 成功的提示
+        message.success("修改成功")
+        // 调用获取subject的方法重新获取
+        this.getSubjectList(this.currentPge, this.currentLimit)
+        if (value.parentId !== "0") {
+          this.props.getSecSubjectListSync(value.parentId)
+        }
+      } catch (error) {
+        message.error("修改失败")
+      }
+    }
   }
   // 点击更新操作显示的取消按钮
   handleCancel = () => {
@@ -79,22 +98,28 @@ class Subject extends Component {
       _id: "",
     })
   }
-  //
+  // 删除
   handleDelete = (id) => {
     return async () => {
-      try {
-        await reqDeleteSubject(id)
-        // 重新获取状态数据
-        const page =
-          this.props.subjectList.items.length >= 2
-            ? this.currentPge
-            : this.currentPge - 1
-        this.getSubjectList(page, this.currentLimit)
-
-        message.success("删除成功")
-      } catch (error) {
-        message.error("删除失败")
+      // try {
+      await reqDeleteSubject(id)
+      // 重新获取状态数据
+      const { items } = this.props.subjectList
+      // 当前页面不是第一页  当前页面为最后一页 当前页面删除的是剩余的最后一条数据
+      if (
+        this.currentPge !== 1 &&
+        items.length === 1 &&
+        this.currentLimit > items.length
+      ) {
+        this.getSubjectList(--this.currentPge, this.currentLimit)
+      } else {
+        this.getSubjectList(this.currentPge, this.currentLimit)
       }
+
+      message.success("删除成功")
+      // } catch (error) {
+      //   message.error("删除失败")
+      // }
     }
   }
   render() {
@@ -130,7 +155,7 @@ class Subject extends Component {
             return (
               <>
                 <Button
-                  onClick={this.handleUpdate}
+                  onClick={this.handleUpdate(value)}
                   style={{ marginRight: 10 }}
                   type="primary"
                 >
@@ -142,7 +167,7 @@ class Subject extends Component {
           } else {
             return (
               <>
-                <Tooltip title="编辑">
+                <Tooltip placement="bottom" title="编辑">
                   <Button
                     onClick={this.handleupdate(value)}
                     type="primary"
@@ -151,8 +176,14 @@ class Subject extends Component {
                     <FormOutlined />
                   </Button>
                 </Tooltip>
-                <Tooltip style={{ position: "relative" }} title="删除">
+                <Tooltip placement="bottom" title="删除">
                   <Popconfirm
+                    getPopupContainer={(triggerNode) => {
+                      // triggerNode 表示 Popconfirm组件节点
+                      // 返回值必须是一个节点 返回的节点就是渲染
+                      // 渲染到triggerNode 的父节点的位置
+                      return triggerNode.parentNode
+                    }}
                     title={`是否删除${value.title}?`}
                     // 点击确定按钮触发的回调
                     onConfirm={this.handleDelete(value._id)}

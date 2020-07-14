@@ -33,10 +33,11 @@ export function reqDeleteSubject(id) {
   })
 }
 // 跟新课程分类信息
+
 export function reqUpdateSubject(title, parentId) {
   return request({
     url: `${BASE_URL}/update`,
     method: "PUT",
-    data: { title, parentId },
+    data: { title, id: parentId },
   })
 }
