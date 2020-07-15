@@ -7,6 +7,14 @@ export function reqGetLesson(chapterId) {
     method: "GET",
   })
 }
+// 新增课时信息
+export function reqAddLesson({ chapterId, title, free, video }) {
+  return request({
+    url: `${BASE_URL}/save`,
+    method: "POST",
+    data: { chapterId, title, free, video },
+  })
+}
 // 更新课时信息 lesson/update
 export function reqUpdateLesson({ lessonId, title, free, video }) {
   return request({
@@ -20,5 +28,12 @@ export function reqDeleteLesson(lessonId) {
   return request({
     url: `${BASE_URL}/remove/${lessonId}`,
     method: "DELETE",
+  })
+}
+// 获取七牛云上传视频需要的token
+export function reqGetQiNIUYunToken() {
+  return request({
+    url: "/uploadtoken",
+    method: "get",
   })
 }

@@ -149,6 +149,10 @@ class Chapter extends Component {
       lessonFree: false,
     })
   }
+  // 跳转到添加lesson界面
+  handleToAddLesson = (value) => () => {
+    this.props.history.push("/edu/chapter/addLesson", value)
+  }
   // 删除
   handleDelte = (data) => () => {
     console.log(data)
@@ -160,7 +164,7 @@ class Chapter extends Component {
       okType: "danger",
       cancelText: "取消",
       onOk: async () => {
-      console.log(data);
+        console.log(data)
         // 发送请求
         await reqDeleteLesson(data._id)
         // 重新获取数据 chapterId
@@ -200,13 +204,12 @@ class Chapter extends Component {
         title: "是否免费",
         // dataIndex: "free",
         render: (value) => {
-          console.log(value)
           if (value._id === this.state.lessonId) {
             return (
               <Switch
-                checkedChildren="付费"
+                checkedChildren="是"
                 onChange={this.handleChange("checked")}
-                unCheckedChildren="免费"
+                unCheckedChildren="否"
                 checked={this.state.lessonFree}
                 defaultChecked
               />
@@ -244,7 +247,7 @@ class Chapter extends Component {
                       <SettingOutlined />
                     </Button>
                   </Tooltip>
-                  <Tooltip title="更新章节">
+                  <Tooltip title="更新课时">
                     <Button
                       type="primary"
                       onClick={this.handleUpdateBtn(data)}
@@ -253,7 +256,7 @@ class Chapter extends Component {
                       <FormOutlined />
                     </Button>
                   </Tooltip>
-                  <Tooltip title="删除章节">
+                  <Tooltip title="删除课时">
                     <Button type="danger" onClick={this.handleDelte(data)}>
                       <DeleteOutlined />
                     </Button>
@@ -261,6 +264,31 @@ class Chapter extends Component {
                 </div>
               )
             }
+          } else {
+            return (
+              <div>
+                <Tooltip title="添加课时">
+                  <Button type="primary" onClick={this.handleToAddLesson(data)}>
+                    <PlusOutlined />
+                  </Button>
+                </Tooltip>
+                <Tooltip title="更新章节">
+                  <Button
+                    type="primary"
+                    // onClick={this.handleUpdateBtn(data)}
+                    style={{ margin: "0 10px" }}
+                  >
+                    <FormOutlined />
+                  </Button>
+                </Tooltip>
+                <Tooltip title="删除章节">
+                  <Button type="danger" >
+                    {/* onClick={this.handleDelte(data)} */}
+                    <DeleteOutlined />
+                  </Button>
+                </Tooltip>
+              </div>
+            )
           }
         },
       },
