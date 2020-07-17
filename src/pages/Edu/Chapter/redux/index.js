@@ -1,3 +1,14 @@
-import { getChapterList, getLessonList } from "./actions"
+import {
+  getChapterList,
+  getLessonList,
+  batchRemoveChapter,
+  batchRemoveLesson,
+} from "./actions"
 import { chapterList } from "./reducers"
-export { getChapterList, chapterList, getLessonList }
+export {
+  getChapterList,
+  chapterList,
+  getLessonList,
+  batchRemoveLesson,
+  batchRemoveChapter,
+}

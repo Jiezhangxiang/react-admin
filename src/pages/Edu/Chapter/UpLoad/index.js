@@ -60,7 +60,7 @@ export default class Myupload extends Component {
   // handleBeforeUpload 函数返回true 或成功的promies执行 上传文件
   handleCustomRequest = (vlaue) => {
     const file = vlaue.file // 上传的文件
-    const key = nanoid(20) + "小白菜" //上传的文件名
+    const key = nanoid(20) + 'xiaobaicai' //上传的文件名
     const token = this.state.uploadToken // 七牛云的token
     const putExtra = { mimeType: "video/*" } // 设置上传的格式
     const config = { region: qiniu.region.z2 } // 设置上传区域
@@ -79,7 +79,7 @@ export default class Myupload extends Component {
         vlaue.onSuccess(res)
         // from表单中的from.item组件会给子组件传递一个onChange方法
         // 这个组件是自定义组件所以需要手动的调用
-        const videoUrl = "http://qqcdb1qpp.bkt.clouddn.com/" + res.key
+        const videoUrl = "http://qdcdb1qpp.bkt.clouddn.com/" + res.key
         this.props.onChange(videoUrl)
       },
     }
@@ -87,7 +87,7 @@ export default class Myupload extends Component {
   }
   componentWillUnmount() {
     // 组件卸载取消上传视频
-    this.subscription.unsubscribe()
+    this.subscription && this.subscription.unsubscribe()
   }
   render() {
     return (

@@ -1,54 +1,74 @@
-import React, { useState } from "react";
-import { Form, Input, Select, Cascader, Button } from "antd";
+import React, { useState, useEffect } from "react"
+import { Form, Input, Select, Cascader, Button } from "antd"
+import { reqGetAllTeacherList } from "@api/edu/teacher"
+import { reqGetAllSubjectList } from "@api/edu/subject"
+import "./index.less"
 
-import "./index.less";
-
-const { Option } = Select;
+const { Option } = Select
 
 function SearchForm() {
-  const [form] = Form.useForm();
-
-  const [options, setOptions] = useState([
-    {
-      value: "zhejiang",
-      label: "Zhejiang",
-      isLeaf: false
-    },
-    {
-      value: "jiangsu",
-      label: "Jiangsu",
-      isLeaf: false
+  const [form] = Form.useForm()
+  const [tearcherList, setTearcherList] = useState([])
+  const [subjectList, setSubjectList] = useState([])
+  // const [options, setOptions] = useState([
+  //   {
+  //     value: "zhejiang",
+  //     label: "Zhejiang",
+  //     isLeaf: false,
+  //   },
+  //   {
+  //     value: "jiangsu",
+  //     label: "Jiangsu",
+  //     isLeaf: false,
+  //   },
+  // ])
+  const options = subjectList.map((subject) => {
+    return {
+      value: subject._id,
+      label: subject.title,
+      isLeaf: false, // false 表示还有二级分类
     }
-  ]);
-
+  })
   const onChange = (value, selectedOptions) => {
-    console.log(value, selectedOptions);
-  };
+    console.log(value, selectedOptions)
+  }
 
-  const loadData = selectedOptions => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-    targetOption.loading = true;
+  const loadData = (selectedOptions) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1]
+    targetOption.loading = true
 
     // load options lazily
     setTimeout(() => {
-      targetOption.loading = false;
+      targetOption.loading = false
       targetOption.children = [
         {
           label: `${targetOption.label} Dynamic 1`,
-          value: "dynamic1"
+          value: "dynamic1",
         },
         {
           label: `${targetOption.label} Dynamic 2`,
-          value: "dynamic2"
-        }
-      ];
-      setOptions([...options]);
-    }, 1000);
-  };
+          value: "dynamic2",
+        },
+      ]
+      // setOptions([...options])
+    }, 1000)
+  }
 
   const resetForm = () => {
-    form.resetFields();
-  };
+    form.resetFields()
+  }
+  useEffect(() => {
+    // 发送请求获取 讲师和分类信息
+    async function req() {
+      const [tearcher, subject] = await Promise.all([
+        reqGetAllTeacherList(),
+        reqGetAllSubjectList(),
+      ])
+      setTearcherList(tearcher)
+      setSubjectList(subject)
+    }
+    req()
+  }, [])
 
   return (
     <Form layout="inline" form={form}>
@@ -61,9 +81,13 @@ function SearchForm() {
           placeholder="课程讲师"
           style={{ width: 250, marginRight: 20 }}
         >
-          <Option value="lucy1">Lucy1</Option>
-          <Option value="lucy2">Lucy2</Option>
-          <Option value="lucy3">Lucy3</Option>
+          {tearcherList.map((item) => {
+            return (
+              <Option key={item._id} value={item._id}>
+                {item.name}
+              </Option>
+            )
+          })}
         </Select>
       </Form.Item>
       <Form.Item name="subject" label="分类">
@@ -87,7 +111,7 @@ function SearchForm() {
         <Button onClick={resetForm}>重置</Button>
       </Form.Item>
     </Form>
-  );
+  )
 }
 
-export default SearchForm;
+export default SearchForm

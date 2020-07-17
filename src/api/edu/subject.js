@@ -10,6 +10,13 @@ export function reqGetSubject(page, limit) {
     method: "GET",
   })
 }
+// 获取所有一级分类管理的列表信息
+export function reqGetAllSubjectList() {
+  return request({
+    url: `${BASE_URL}`,
+    method: "GET",
+  })
+}
 // 获取二级分类管理信息
 export function reqGetSecSubject(parentId) {
   return request({

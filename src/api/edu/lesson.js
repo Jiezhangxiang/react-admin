@@ -30,6 +30,14 @@ export function reqDeleteLesson(lessonId) {
     method: "DELETE",
   })
 }
+// 批量删除
+export function reqBatchRemoveLesson(idList) {
+  return request({
+    url: `${BASE_URL}/batchRemove`,
+    method: "DELETE",
+    data: { idList },
+  })
+}
 // 获取七牛云上传视频需要的token
 export function reqGetQiNIUYunToken() {
   return request({

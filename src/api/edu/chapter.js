@@ -8,3 +8,10 @@ export function reqGetChapterList({ page, limit, courseId }) {
     params: { courseId },
   })
 }
+export function reqBatchRemoveChapter(idList) {
+  return request({
+    url: `${BASE_URL}/batchRemove`,
+    method: "DELETE",
+    data: { idList },
+  })
+}
