@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Layout, Menu, Dropdown, Breadcrumb } from "antd";
+import React, { Component } from "react"
+import { Layout, Menu, Dropdown, Breadcrumb, Button } from "antd"
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -7,22 +7,22 @@ import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
-} from "@ant-design/icons";
-import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
-
-import SiderMenu from "../SiderMenu";
-import { AuthorizedRouter } from "@comps/Authorized";
-import { logout } from "@redux/actions/login";
-import { resetUser } from "../../components/Authorized/redux";
-import logo from "@assets/images/logo.png";
-import { findPathIndex } from "@utils/tools";
+} from "@ant-design/icons"
+import { connect } from "react-redux"
+import { Link, withRouter } from "react-router-dom"
+import pubSub from "pubsub-js"
+import SiderMenu from "../SiderMenu"
+import { AuthorizedRouter } from "@comps/Authorized"
+import { logout } from "@redux/actions/login"
+import { resetUser } from "../../components/Authorized/redux"
+import logo from "@assets/images/logo.png"
+import { findPathIndex } from "@utils/tools"
 
 // 引入组件公共样式
-import "@assets/css/common.less";
-import "./index.less";
+import "@assets/css/common.less"
+import "./index.less"
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout
 
 @connect(
   (state) => ({
@@ -37,22 +37,22 @@ const { Header, Sider, Content } = Layout;
 class PrimaryLayout extends Component {
   state = {
     collapsed: false,
-  };
+  }
 
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
-    });
-  };
+    })
+  }
 
   logout = ({ key }) => {
-    if (key !== "2") return;
+    if (key !== "2") return
     this.props.logout().then(() => {
-      localStorage.removeItem("user_token");
-      this.props.resetUser();
-      this.props.history.replace("/login");
-    });
-  };
+      localStorage.removeItem("user_token")
+      this.props.resetUser()
+      this.props.history.replace("/login")
+    })
+  }
 
   menu = (
     <Menu style={{ width: 150 }} onClick={this.logout}>
@@ -74,40 +74,40 @@ class PrimaryLayout extends Component {
         退出登录
       </Menu.Item>
     </Menu>
-  );
+  )
 
   selectRoute = (routes = [], pathname) => {
     for (let i = 0; i < routes.length; i++) {
-      const route = routes[i];
+      const route = routes[i]
       if (route.path === pathname) {
-        return route;
+        return route
       }
-      const children = route.children;
+      const children = route.children
 
       if (children && children.length) {
         for (let j = 0; j < children.length; j++) {
-          const item = children[j];
+          const item = children[j]
           // 跳过4级菜单
-          if (!item.path) continue;
+          if (!item.path) continue
 
-          let path = route.path + item.path;
+          let path = route.path + item.path
           /*
             path: /acl/role/list
               --> /acl/role
             pathname: /acl/role/auth/xxx  
           */
-          const index = findPathIndex(path, "/");
-          path = path.slice(0, index);
+          const index = findPathIndex(path, "/")
+          path = path.slice(0, index)
           if (pathname.indexOf(path) !== -1) {
             return {
               ...route,
               children: item,
-            };
+            }
           }
         }
       }
     }
-  };
+  }
 
   renderBreadcrumb = (route) => {
     if (this.props.location.pathname === "/") {
@@ -115,10 +115,10 @@ class PrimaryLayout extends Component {
         <Breadcrumb>
           <Breadcrumb.Item>首页</Breadcrumb.Item>
         </Breadcrumb>
-      );
+      )
     }
 
-    if (!route) return;
+    if (!route) return
 
     return (
       <Breadcrumb>
@@ -128,18 +128,31 @@ class PrimaryLayout extends Component {
         <Breadcrumb.Item>{route.name}</Breadcrumb.Item>
         <Breadcrumb.Item>{route.children.name}</Breadcrumb.Item>
       </Breadcrumb>
-    );
-  };
+    )
+  }
+  handleLocale = (value) => () => {
+    pubSub.publish("setLocaleMessages", value)
+  }
 
   render() {
-    const { collapsed } = this.state;
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <Button onClick={this.handleLocale("zh")}>中文</Button>
+        </Menu.Item>
+        <Menu.Item>
+          <Button onClick={this.handleLocale("en")}>english</Button>
+        </Menu.Item>
+      </Menu>
+    )
+    const { collapsed } = this.state
     const {
       routes,
       user,
       location: { pathname },
-    } = this.props;
+    } = this.props
 
-    const route = this.selectRoute(routes, pathname);
+    const route = this.selectRoute(routes, pathname)
 
     return (
       <Layout className="layout">
@@ -170,7 +183,9 @@ class PrimaryLayout extends Component {
                   </span>
                 </Dropdown>
                 <span className="site-layout-lang">
-                  <GlobalOutlined />
+                  <Dropdown overlay={menu}>
+                    <GlobalOutlined />
+                  </Dropdown>
                 </span>
               </span>
             </span>
@@ -186,8 +201,8 @@ class PrimaryLayout extends Component {
           </Content>
         </Layout>
       </Layout>
-    );
+    )
   }
 }
 
-export default PrimaryLayout;
+export default PrimaryLayout

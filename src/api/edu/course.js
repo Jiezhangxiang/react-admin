@@ -7,3 +7,18 @@ export function reqGetCourse() {
     method: "GET",
   })
 }
+// 获取所有的课程分页列表信息
+export function reqGetAllCourse({
+  page,
+  limit,
+  teacherId,
+  subjectId,
+  subjectParentId,
+  title,
+}) {
+  return request({
+    url: `${BASE_URL}/${page}/${limit}`,
+    method: "GET",
+    params: { teacherId, subjectId, subjectParentId, title },
+  })
+}
